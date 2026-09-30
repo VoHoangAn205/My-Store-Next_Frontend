@@ -1,5 +1,5 @@
+import { InternalAxiosRequestConfig } from "axios";
 import { axiosPrivate, axiosPublic } from "./API";
-// import { router } from "../app";
 
 let accessTokenMemory: string | null = null;
 let isRefreshing:boolean = false;
@@ -9,6 +9,10 @@ interface failedQuereItem {
     reject: (error: unknown) => void;
 }
 let failedQueue: failedQuereItem[] = [];
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean
+}
 
 export const setAccessToken = (token: string | null) => {
   accessTokenMemory = token;
@@ -38,25 +42,27 @@ axiosPrivate.interceptors.request.use(
 axiosPrivate.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    const originalRequest = error.config as CustomAxiosRequestConfig | undefined;
+    
+    if (!originalRequest) {
+      return Promise.reject(error)
+    }
+    if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
             originalRequest.headers["Authorization"] = `Bearer ${token}`;
             return axiosPrivate(originalRequest);
           })
-          .catch((err) => {
-            Promise.reject(err);
-          });
+          .catch((err) => Promise.reject(err));
       }
       isRefreshing = true;
       originalRequest._retry = true;
 
       try {
-        const response = await axiosPublic.post("/refresh");
+        const response = await axiosPublic.post<{ accessToken: string }>("/refresh");
         const newAccessToken = response.data.accessToken;
 
         setAccessToken(newAccessToken);
@@ -72,7 +78,7 @@ axiosPrivate.interceptors.response.use(
         }
 
         setAccessToken(null);
-        // router.navigate("/login");
+        window.location.href = "/login"
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

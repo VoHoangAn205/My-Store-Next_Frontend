@@ -18,3 +18,11 @@ export interface User {
 export interface AuthResponse {
   accessToken: string;
 }
+
+export interface Category {
+  emoji: string;
+  name: string;
+  _id: string
+}
+
+export type CategoryListResponse = Category[];
