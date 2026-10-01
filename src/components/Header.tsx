@@ -1,29 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { axiosPublic } from "@/lib/API";
+import { useCategoryStore } from "@/store/useCategoryStore";
+import { useUIStore } from "@/store/useUIStore";
+import { Category } from "@/types";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import HiddenSearchBar from "./HiddenSearchBar";
 import SearchBar from "./SearchBar";
-import { useNavigate } from "react-router";
-import { axiosPublic } from "@/lib/API";
-import { toast } from "sonner";
-import { Category } from "@/types";
 
 function Header() {
   const navigate = useNavigate();
-  const [categoriesList, setCategoriesList] = useState<Category[]>([])
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const { isSidebarOpen, toggleSidebar, closeSidebar} = useUIStore()
+  const { listCategory, setListCategory} = useCategoryStore()
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const handleToggle = () => {
-    //toggleSiedbar
-  };
 
   const navigateUser = (id: string) => {
     navigate(`/category/${id}`);
-    setDropdownOpen(false);
+    closeSidebar()
   };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
+        closeSidebar()
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -35,7 +34,7 @@ function Header() {
         try {
           const res = await axiosPublic.get<Category[]>("/category");
 
-            setCategoriesList(res.data);
+            setListCategory(res.data)
         } catch (err) {
           toast.error("Failed to load categories");
         }
@@ -48,7 +47,7 @@ function Header() {
       <header className="bg-brand-dark p-5 border-b border-brand-sand/20 sticky z-50 top-0 shadow-md">
         <div className="mx-auto px-4 flex justify-between items-center">
           <div className="flex gap-6 items-baseline">
-            <button className="md:hidden" onClick={handleToggle}>
+            <button className="md:hidden" onClick={() => toggleSidebar()}>
               <i className="fa-solid fa-bars text-brand-light text-[27px]"></i>
             </button>
 
@@ -67,19 +66,19 @@ function Header() {
           {/* dropdown menu */}
           <div className="hidden md:block relative" ref={dropdownRef}>
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              onClick={() => toggleSidebar()}
               className="flex items-center gap-2 text-sm font-semibold text-brand-light hover:text-brand-rust transition-colors duration-200 focus:outline-none cursor-pointer"
             >
               <span>Categories</span>
               <i
-                className={`fa-solid fa-chevron-down text-xs transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                className={`fa-solid fa-chevron-down text-xs transition-transform duration-200 ${isSidebarOpen ? "rotate-180" : ""}`}
               ></i>
             </button>
 
             {/* THE ACTUAL DROPDOWN FLOATING CARD */}
-            {dropdownOpen && (
+            {isSidebarOpen && (
               <div className="absolute -right-1/3 mt-4 w-50 bg-brand-dark border border-brand-sand/20 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                {categoriesList.map((cate, idx) => (
+                {listCategory.map((cate, idx) => (
                   <a
                     key={idx}
                     className="flex items-center px-4 py-2.5 text-sm font-medium text-brand-slate hover:bg-white/5 hover:text-white transition-colors"
