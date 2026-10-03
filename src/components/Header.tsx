@@ -1,7 +1,6 @@
-import { axiosPublic } from "@/lib/API";
+import categoryService from "@/services/categoryService";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import { useUIStore } from "@/store/useUIStore";
-import { Category } from "@/types";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -32,9 +31,9 @@ function Header() {
   useEffect(() => {
       const getAllCategories = async () => {
         try {
-          const res = await axiosPublic.get<Category[]>("/category");
+          const response = await categoryService.getAllCategory();
 
-            setListCategory(res.data)
+            setListCategory(response)
         } catch (err) {
           toast.error("Failed to load categories");
         }

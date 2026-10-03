@@ -12,7 +12,7 @@ export interface Product {
 export interface User {
     _id: string;
     username: string;
-    role: number[];
+    roles: number[];
 }
 
 export interface AuthResponse {
