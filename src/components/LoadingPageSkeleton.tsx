@@ -1,3 +1,4 @@
+'use client';
 export default function LoadingPageSkeleton() {
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 flex">

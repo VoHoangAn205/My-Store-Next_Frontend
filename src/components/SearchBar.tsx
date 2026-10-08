@@ -1,8 +1,9 @@
+'use client';
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 export default function SearchBar() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [query, setQuery] = useState("");
 
   const handleOnChange = (e: any) => {
@@ -11,14 +12,14 @@ export default function SearchBar() {
 
   const handleEnter = () => {
     if (query.length > 0) {
-      navigate(`/search?query=${query}`);
+      router.push(`/search?query=${query}`);
     }
   };
   return (
     <>
       <div className="w-full max-w-md hidden md:block">
         <form
-          action={handleEnter}
+          onSubmit={handleEnter}
           method="GET"
           className="relative flex items-center group"
         >

@@ -1,11 +1,24 @@
+export interface ImageItems {
+  _id: string;
+  public_id?: string;
+  url: string;
+}
+
+export interface Gallery {
+  _id: string;
+  images: ImageItems[]
+}
+
 export interface Product {
     _id: string;
   name: string;
   description: string;
   price: number;
   category: string;
-  gallery: string[];
+  gallery: Gallery;
   stock: number;
+  status: "Available" | "Sold out" | "Discontinued";
+  user: string
   createdAt: string;
 }
 

@@ -1,20 +1,22 @@
+'use client';
 import categoryService from "@/services/categoryService";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import { useUIStore } from "@/store/useUIStore";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import HiddenSearchBar from "./HiddenSearchBar";
 import SearchBar from "./SearchBar";
+import { useRouter } from "next/navigation";
 
 function Header() {
-  const navigate = useNavigate();
+  const router = useRouter()
   const { isSidebarOpen, toggleSidebar, closeSidebar} = useUIStore()
   const { listCategory, setListCategory} = useCategoryStore()
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const navigateUser = (id: string) => {
-    navigate(`/category/${id}`);
+    router.push(`/category/${id}`);
     closeSidebar()
   };
 
@@ -50,14 +52,15 @@ function Header() {
               <i className="fa-solid fa-bars text-brand-light text-[27px]"></i>
             </button>
 
-            <a
+            <Link href={"/"} className="text-xl font-black tracking-widest text-brand-light hover:text-brand-rust transition-colors duration-200">HOANGAN<span className="text-brand-rust">.</span></Link>
+            {/* <a
               onClick={() => {
                 navigate("/");
               }}
               className="text-xl font-black tracking-widest text-brand-light hover:text-brand-rust transition-colors duration-200"
             >
               HOANGAN<span className="text-brand-rust">.</span>
-            </a>
+            </a> */}
           </div>
 
           <SearchBar />

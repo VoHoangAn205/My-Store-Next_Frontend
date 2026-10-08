@@ -12,7 +12,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const initializeAuth = async () => {
             const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-        if (isLoggedIn) {
+        if (!isLoggedIn) {
             setIsLoading(false);
             return;
         }
