@@ -1,5 +1,5 @@
 'use client';
-import LoadingPageSkeleton from "@/components/LoadingPageSkeleton";
+import LoadingPageSkeleton from "@/components/loadingSkeleton/LoadingPageSkeleton";
 import authService from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";

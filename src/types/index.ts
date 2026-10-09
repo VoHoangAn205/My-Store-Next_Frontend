@@ -38,4 +38,16 @@ export interface Category {
   _id: string
 }
 
+export interface QueryParams {
+    limit?: number
+    page?: number
+}
+
+export interface ProductPagination {
+  count: number;
+  totalPage: number;
+  currentPage: number;
+  data: Product[];
+}
+
 export type CategoryListResponse = Category[];
