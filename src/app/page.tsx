@@ -1,9 +1,8 @@
-import CategoryFilterBar from "@/components/CategoryFilterBar";
-import LoadingCardSkeleton from "@/components/loadingSkeleton/LoadingCardSkeleton";
 import productService from "@/services/productService";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import getErrorMessage from "@/helpers/getErrorMessage";
+import CategorySection from "@/components/CategorySection";
 
 export const revalidate = 60;
 
@@ -40,7 +39,7 @@ const Home = async () => {
 
               {/* Category Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                <CategoryFilterBar/>
+                <CategorySection/>
               </div>
             </section>
 

@@ -41,13 +41,19 @@ export interface Category {
 export interface QueryParams {
     limit?: number
     page?: number
+    id?: string
 }
 
-export interface ProductPagination {
+export interface PagePagination {
   count: number;
   totalPage: number;
   currentPage: number;
+}
+
+export interface ProductPagination extends PagePagination{
   data: Product[];
 }
+
+
 
 export type CategoryListResponse = Category[];
