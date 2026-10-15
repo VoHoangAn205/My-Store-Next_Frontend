@@ -9,7 +9,7 @@ const productService = {
         return response.data; 
     }),
     getProductByCategory: unstable_cache(async (data: QueryParams) => {
-        const response = await axiosPublic.get<ProductPagination>((`/product/category/${data.id}?page=${data.page}&limit=${data.limit}`));
+        const response = await axiosPublic.get<ProductPagination>((`/product/category/${data.id}?page=${data.page}&limit=${data.limit}&sort=${data.sort}`));
 
         return response.data;
     })

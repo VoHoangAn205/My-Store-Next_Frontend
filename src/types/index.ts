@@ -39,9 +39,11 @@ export interface Category {
 }
 
 export interface QueryParams {
-    limit?: number
-    page?: number
+    limit?: string
+    page?: string
     id?: string
+    sort?: "priceAsc" | "priceDesc" | "bestSeller",
+    q?: string
 }
 
 export interface PagePagination {
