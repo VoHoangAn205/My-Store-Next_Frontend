@@ -11,7 +11,7 @@ const Home = async () => {
   let errMessage: string | null = null;
 
   try {
-    const response = await productService.getHomePageProduct({limit: 8})  
+    const response = await productService.getHomePageProduct({limit: "8"})  
       products = response.data;
   } catch (err) {
     const message = getErrorMessage(err);

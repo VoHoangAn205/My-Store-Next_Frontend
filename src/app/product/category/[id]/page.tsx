@@ -1,25 +1,26 @@
-import CategoryFilterBar from "@/components/CategoryFilterBar";
-import CategoryPageHeader from "@/components/CategoryPageHeader";
+import CategoryFilterBar from "@/components/FilterBar";
+import SubPageHeader from "@/components/SubPageHeader";
 import NoProductFound from "@/components/NoProductFound";
 import PaginationBar from "@/components/PaginationBar";
 import ProductCard from "@/components/ProductCard";
 import getErrorMessage from "@/helpers/getErrorMessage";
 import productService from "@/services/productService";
-import { PagePagination, Product, ProductPagination } from "@/types";
+import { PagePagination, Product, QueryParams } from "@/types";
 const defaultPagination = {
   totalPage: 1,
   currentPage: 1,
   count: 0
 }
 
+const pageTitle = {
+  pageName: "Categories", 
+  title: "Category", 
+  description: "Explore top-grade product by categories"
+}
+
 interface Props {
   params: Promise<{ id: string}>
-  searchParams : Promise<{
-    sort?: "priceAsc" | "priceDesc" | "bestSeller",
-    page?: string,
-    limit?: string,
-    q?: string
-  }>
+  searchParams : Promise<QueryParams>
 }
 
 const category = async ({params, searchParams } : Props) => {
@@ -49,7 +50,7 @@ const category = async ({params, searchParams } : Props) => {
     <>
       <div className="min-h-screen bg-brand-light font-sans text-brand-dark">
         {/* PAGE HEADER & BREADCRUMBS */}
-          <CategoryPageHeader/>
+          <SubPageHeader data={pageTitle}/>
         {/* MAIN CATEGORY CONTAINER */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* FULL-WIDTH SORT & CONTROL BAR */}

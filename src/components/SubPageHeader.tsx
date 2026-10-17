@@ -1,7 +1,14 @@
 "use client"
 import Link from "next/link"
 
-const CategoryPageHeader = () => {
+interface Props {
+  pageName: string
+  title: string,
+  description: string,
+}
+
+const SubPageHeader = ({data} : {data: Props}) => {
+    const {pageName = "...", title = "...", description = "..."} = data
     return (<>
          <header className="bg-white border-b border-brand-sand">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -12,15 +19,15 @@ const CategoryPageHeader = () => {
               </Link>
               <span>/</span>
               <span  className="hover:text-brand-rust transition">
-                Categories
+                {pageName}
               </span>
             </nav>
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-brand-dark">Category</h1>
+                <h1 className="text-3xl font-bold text-brand-dark">{title}</h1>
                 <p className="text-sm text-brand-slate mt-1">
-                  Explore top-grade product by category.
+                  {description}
                 </p>
               </div>
             </div>
@@ -29,4 +36,4 @@ const CategoryPageHeader = () => {
     </>)
 }
 
-export default CategoryPageHeader
+export default SubPageHeader;

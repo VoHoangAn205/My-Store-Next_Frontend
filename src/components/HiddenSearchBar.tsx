@@ -10,9 +10,10 @@ export default function HiddenSearchBar() {
     setQuery(e.target.value);
   };
 
-  const handleEnter = () => {
+  const handleEnter = (e: React.SubmitEvent) => {
+    e.preventDefault();
     if (query.length > 0) {
-      router.push(`/search?query=${query}`);
+      router.push(`/product?query=${query}`);
     }
   };
 

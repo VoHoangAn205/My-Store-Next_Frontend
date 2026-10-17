@@ -39,23 +39,27 @@ export interface Category {
 }
 
 export interface QueryParams {
-    limit?: string
-    page?: string
-    id?: string
-    sort?: "priceAsc" | "priceDesc" | "bestSeller",
-    q?: string
+  sort?: "priceAsc" | "priceDesc" | "bestSeller",
+  page?: string,
+  limit?: string,
+  query?: string
 }
 
-export interface PagePagination {
-  count: number;
-  totalPage: number;
-  currentPage: number;
+export interface QueryParamsExtension extends QueryParams{
+    id?: string,
+    
 }
 
 export interface ProductPagination extends PagePagination{
   data: Product[];
 }
 
+
+export interface PagePagination {
+  count: number;
+  totalPage: number;
+  currentPage: number;
+}
 
 
 export type CategoryListResponse = Category[];

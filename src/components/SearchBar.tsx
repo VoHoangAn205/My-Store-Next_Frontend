@@ -10,9 +10,10 @@ export default function SearchBar() {
     setQuery(e.target.value);
   };
 
-  const handleEnter = () => {
-    if (query.length > 0) {
-      router.push(`/search?query=${query}`);
+  const handleEnter = (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (query.length > 0) {      
+      router.push(`/product?query=${query}`);
     }
   };
   return (

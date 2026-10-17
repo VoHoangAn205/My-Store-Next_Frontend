@@ -13,7 +13,7 @@ const sortOptions = [
 const DEFAULT_LIMIT = "12";
 const DEFAULT_SORT = "newest";
 
-interface CategoryFilterBarProps { 
+interface FilterBarProps { 
     pagination: PagePagination;
 }
 
@@ -50,7 +50,7 @@ const SelectField = ({ id, label, value, options, onChange }: SelectFieldProps) 
   </div>
 )
 
-const CategoryFilterBar = ({pagination} : CategoryFilterBarProps) => {
+const FilterBar = ({pagination} : FilterBarProps) => {
     const updateQuery = useUpdateQuery()
     const searchParams  = useSearchParams()
 
@@ -96,4 +96,4 @@ const CategoryFilterBar = ({pagination} : CategoryFilterBarProps) => {
     )
 }
 
-export default CategoryFilterBar; 
+export default FilterBar; 
