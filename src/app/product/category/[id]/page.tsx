@@ -23,6 +23,8 @@ interface Props {
   searchParams : Promise<QueryParams>
 }
 
+export const revalidate = 60;
+
 const category = async ({params, searchParams } : Props) => {
   const {id} = await params;
   const {page, limit, sort} = await searchParams;

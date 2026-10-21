@@ -13,14 +13,18 @@ const productService = {
 
         return response.data;
     }),
-    searchProduct: unstable_cache(async (data: QueryParamsExtension) => {
+    searchProduct: async (data: QueryParamsExtension) => {
         const { query, sort, limit, page} = data
-        console.log(data);
         
         const response = await axiosPublic.get<ProductPagination>(`/product/search?query=${query}&limit=${limit}&page=${page}&sort=${sort}`);
 
         return response.data;
-    })
+    },
+    getProductDetail: unstable_cache(async (data: QueryParamsExtension)=> {
+        const response = await axiosPublic.get<Product>((`/product/${data.id}`))
+
+        return response.data;
+    }),
 }
 
 export default productService;

@@ -9,6 +9,12 @@ export interface Gallery {
   images: ImageItems[]
 }
 
+export interface User {
+    _id: string;
+    username: string;
+    roles: number[];
+}
+
 export interface Product {
     _id: string;
   name: string;
@@ -18,14 +24,8 @@ export interface Product {
   gallery: Gallery;
   stock: number;
   status: "Available" | "Sold out" | "Discontinued";
-  user: string
+  user: User
   createdAt: string;
-}
-
-export interface User {
-    _id: string;
-    username: string;
-    roles: number[];
 }
 
 export interface AuthResponse {

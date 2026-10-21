@@ -26,7 +26,7 @@ const ProductCard = ({data}: {data: Product}) => {
 
         {/* Title with Full-Card Clickable Overlay */}
         <h3 className="font-semibold text-brand-dark text-base line-clamp-2 mb-2 group-hover:text-brand-rust transition-colors duration-200">
-          <Link href={`/detail/${_id}`}
+          <Link href={`/product/detail/${_id}`}
             className="cursor-pointer after:absolute after:inset-0 focus:outline-none"
           >
             {name}
