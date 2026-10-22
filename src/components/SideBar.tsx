@@ -131,14 +131,14 @@ export default function SideBar() {
           ) : (
             <div className="flex flex-col gap-5 items-center my-3">
               <button
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/auth/login")}
                 className="bg-brand-rust text-brand-light rounded-2xl w-full"
               >
                 sign in
               </button>
               <span>Or</span>
               <button
-                onClick={() => router.push("/register")}
+                onClick={() => router.push("/auth/register")}
                 className="border-brand-light border-2 text-brand-light rounded-2xl w-full hover:text-brand-rust hover:border-brand-rust"
               >
                 register
