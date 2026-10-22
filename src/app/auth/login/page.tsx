@@ -4,6 +4,7 @@ import authService from "@/services/authService";
 import getErrorMessage from "@/helpers/getErrorMessage";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 function login() {
   const router = useRouter();
@@ -30,9 +31,13 @@ function login() {
     try {
       const response = await authService.login(formData);
 
-    //   dispatch(getUserInfoWithToken(res.data.accessToken));
-      setErrMessage("");
-      router.push("/");
+      if (response.accessToken) {
+        setErrMessage("");
+        router.push("/");
+        toast.success("logged in successful")
+        router.refresh()
+      }
+      
     } catch (err) {
       const message = getErrorMessage(err)
       console.error(message)

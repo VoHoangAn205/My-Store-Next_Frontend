@@ -1,12 +1,19 @@
 'use client';
+import getErrorMessage from "@/helpers/getErrorMessage";
+import authService from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUIStore } from "@/store/useUIStore";
+import { User } from "@/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
-export default function SideBar() {
+interface Props {
+  userInfo: User | null
+}
+
+export default function SideBar({userInfo} : Props) {
   const router = useRouter()
-  const {userInfo} = useAuthStore()
   const {isSidebarOpen, closeSidebar} = useUIStore()
   const [activeTab, setActiveTab] = useState("cart");
   const userRoles = userInfo?.roles || [];
@@ -33,7 +40,7 @@ export default function SideBar() {
       requiredRole: 1984,
     },
   ];
- 
+  
   const roleName = () => {
     switch (true) {
       case userRoles.includes(5150):
@@ -51,9 +58,16 @@ export default function SideBar() {
     closeSidebar();
   };
 
-  const handleLogout = () => {
-    router.push("/");
-    // dispatch(logout());
+  const handleLogout = async () => {
+    try {
+      const response = await authService.logout()
+      router.push("/");
+      toast.success("Logged out")
+    } catch (err) {
+      const message = getErrorMessage(err);
+      toast.error(message);
+      console.error(message)
+    }
   };
 
   const handleNavigate = (id: string) => {
