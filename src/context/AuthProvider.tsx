@@ -1,44 +1,31 @@
 'use client';
-import LoadingPageSkeleton from "@/components/loadingSkeleton/LoadingPageSkeleton";
 import authService from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
+let initPromise: Promise<void> | null = null;
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const { setAccessToken, clearLocalAuthInfo, setUserInfo } = useAuthStore()
-    const [isLoading, setIsLoading] = useState(true)
+    const { setAccessToken, clearLocalAuthInfo, setUserInfo, setAuthStatus } = useAuthStore();
 
     useEffect(() => {
-        const initializeAuth = async () => {
-            const isLoggedIn = localStorage.getItem("isLoggedIn");
+        initPromise ??= (async () => {
+            const { accessToken } = await authService.refreshToken();
+            setAccessToken(accessToken);
+            setUserInfo(await authService.getUserInfo({accessToken}));
+        })();
 
-        if (!isLoggedIn) {
-            setIsLoading(false);
-            return;
-        }
+        initPromise
+            .then(() => setAuthStatus("authed"))
+            .catch((err) => {
+                initPromise = null;
+                clearLocalAuthInfo();
+                setAuthStatus("guest");
+            })
+    },[setAccessToken, clearLocalAuthInfo, setUserInfo]);
 
-        try {
-        const response = await authService.refreshToken();
-
-        if(response?.accessToken) {
-            setAccessToken(response.accessToken)
-            const userInfo = await authService.getUserInfo()
-            setUserInfo(userInfo)
-        }
-        } catch (err) {
-            localStorage.removeItem("isLoggedIn");
-            clearLocalAuthInfo()
-        } finally {
-            setIsLoading(false);
-        }
-        }
-        initializeAuth()
-    },[setAccessToken, clearLocalAuthInfo, setUserInfo])
-    if (isLoading) {
-        return <LoadingPageSkeleton/>
-    }
     return <>{children}</>
 
 }
 
-export default AuthProvider
+export default AuthProvider;

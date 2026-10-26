@@ -1,13 +1,16 @@
 "use client";
-import { ChangeEvent, HTMLInputTypeAttribute, useState } from "react";
-import authService from "@/services/authService";
 import getErrorMessage from "@/helpers/getErrorMessage";
-import { useRouter } from "next/navigation";
+import authService from "@/services/authService";
+import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 
-function login() {
+const login = () => {
+  const {setAuthStatus, setUserInfo, setAccessToken} = useAuthStore();
   const router = useRouter();
+  const from = useSearchParams().get("from");
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,10 +35,13 @@ function login() {
       const response = await authService.login(formData);
 
       if (response.accessToken) {
+        const accessToken = response.accessToken;
+        setUserInfo(await authService.getUserInfo({accessToken}));
+        toast.success("logged in successful");
+        setAuthStatus("authed");
+        setAccessToken(accessToken);
         setErrMessage("");
-        router.push("/");
-        toast.success("logged in successful")
-        router.refresh()
+        router.replace(from ?? "/");
       }
       
     } catch (err) {

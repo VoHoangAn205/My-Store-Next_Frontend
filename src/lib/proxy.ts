@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const middleware = (req: NextRequest) => {
+export const proxy = (req: NextRequest) => {
     if (!req.cookies.has('jwt')) {
         const url = new URL('/login', req.url);
         url.searchParams.set("from", req.nextUrl.pathname);
@@ -9,4 +9,4 @@ const middleware = (req: NextRequest) => {
     return NextResponse.next()
 }
 
-export default middleware;
+export const config = { matcher: ["/manager/:path*", "/account/:path*"]}

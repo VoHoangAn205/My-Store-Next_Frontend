@@ -8,13 +8,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface Props {
-  userInfo: User | null
-}
 
-export default function SideBar({userInfo} : Props) {
-  const router = useRouter()
-  const {isSidebarOpen, closeSidebar} = useUIStore()
+export default function SideBar() {
+  const router = useRouter();
+  const { userInfo, setAuthStatus, setAccessToken, clearLocalAuthInfo } = useAuthStore();
+  const {isSidebarOpen, closeSidebar} = useUIStore();
   const [activeTab, setActiveTab] = useState("cart");
   const userRoles = userInfo?.roles || [];
   const NAVIGATION_TABS = [
@@ -60,13 +58,16 @@ export default function SideBar({userInfo} : Props) {
 
   const handleLogout = async () => {
     try {
-      const response = await authService.logout()
-      router.push("/");
-      toast.success("Logged out")
+      const response = await authService.logout();
+      clearLocalAuthInfo();
+      setAccessToken("");
+      setAuthStatus("guest");
+      toast.success("Logged out");
+      router.replace("/auth/login");
     } catch (err) {
       const message = getErrorMessage(err);
       toast.error(message);
-      console.error(message)
+      console.error(message);
     }
   };
 

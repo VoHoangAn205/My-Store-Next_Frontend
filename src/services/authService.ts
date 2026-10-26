@@ -1,9 +1,17 @@
 import { axiosPrivate, axiosPublic } from "@/lib/API"
 import { AuthResponse, User } from "@/types"
 
+interface TokenFetching {
+    accessToken: string
+}
+
 const authService = {
-    getUserInfo: async () => {
-        const response = await axiosPrivate.get<User>("/user");
+    getUserInfo: async (data: TokenFetching) => {  
+        const response = await axiosPublic.get<User>("/user", {
+            headers: {
+                Authorization: `Bearer ${data.accessToken}`
+            }
+        });
         return response.data;
     },
     login: async (data: object) => {

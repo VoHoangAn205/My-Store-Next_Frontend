@@ -22,7 +22,9 @@ export const metadata: Metadata = {
   description: "High-performance E-commerce store.",
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode}>) {
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode}>) {
+  
   return (
     <html lang="en" className={inter.className}>
      <body className="min-h-screen bg-brand-light flex flex-col antialiased">
@@ -30,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AuthProvider>
           <Header />
           <div className="flex grow relative">
-            <SideBar />
+            <SideBar/>
 
             <main className="grow max-w-7xl w-full mx-auto px-4 py-4">
               {children}
