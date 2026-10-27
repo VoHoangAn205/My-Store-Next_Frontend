@@ -1,4 +1,5 @@
 "use client";
+import BrandContext from "@/components/BrandContext";
 import getErrorMessage from "@/helpers/getErrorMessage";
 import authService from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -56,34 +57,7 @@ const login = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-brand-light">
       {/* LEFT SIDE: BRAND CONTENT SHOWCASE (Matches Register view for design consistency) */}
-      <div className="hidden lg:flex lg:col-span-5 bg-brand-dark relative p-12 flex-col justify-between text-white overflow-hidden border-r border-brand-sand/10">
-        <div className="absolute inset-0 bg-radial from-brand-rust/20 via-transparent to-transparent opacity-50 pointer-events-none" />
-
-        {/* Brand Logo Header */}
-        <a
-          href="#"
-          className="text-2xl font-black tracking-widest text-white relative z-10"
-        >
-          HOANGAN<span className="text-brand-rust">.</span>
-        </a>
-
-        {/* Welcome Back Message */}
-        <div className="space-y-6 relative z-10 max-w-sm">
-          <h2 className="text-3xl font-black tracking-tight leading-tight">
-            Welcome back to the collective.
-          </h2>
-          <p className="text-sm text-brand-slate leading-relaxed">
-            Ready for today's marketplace experience? Log in to find what you
-            love or reach your customers.
-          </p>
-        </div>
-
-        {/* Footer Meta */}
-        <div className="text-xs text-brand-slate relative z-10">
-          &copy; 2026 HOANGAN Collective. All rights reserved.
-        </div>
-      </div>
-
+      <BrandContext/>
       {/* RIGHT SIDE: THE ACTIONABLE LOGIN FORM CANVAS */}
       <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 sm:p-12 lg:p-16">
         <div className="w-full max-w-md bg-white border border-brand-sand rounded-2xl p-8 sm:p-10 shadow-xl">
@@ -102,7 +76,7 @@ const login = () => {
             <p className="text-sm text-brand-slate mt-1">
               New to our network?{" "}
               <Link
-                href={"/register"}
+                href={"/auth/register"}
                 className="text-brand-rust font-semibold hover:underline"
               >
                 Create an account

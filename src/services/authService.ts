@@ -1,5 +1,5 @@
 import { axiosPrivate, axiosPublic } from "@/lib/API"
-import { AuthResponse, User } from "@/types"
+import { AuthResponse, Register, User } from "@/types"
 
 interface TokenFetching {
     accessToken: string
@@ -24,6 +24,14 @@ const authService = {
     },
     logout: async () => {
         const response = await axiosPublic.post("/logout");
+        return response.data;
+    },
+    requestOtpRegister: async (email: string) => {
+        const response = await axiosPublic.post("/requestOtp", email);
+        return response.data;
+    },
+    register: async (data: Register) => {
+        const response = await axiosPublic.post("register", data);
         return response.data;
     }
 }

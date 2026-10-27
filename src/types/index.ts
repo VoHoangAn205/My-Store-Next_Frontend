@@ -63,3 +63,11 @@ export interface PagePagination {
 
 
 export type CategoryListResponse = Category[];
+
+export interface Register {
+  username: string,
+  email: string,
+  password: string,
+  otp: string,
+}
+
