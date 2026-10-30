@@ -1,7 +1,6 @@
-import { InternalAxiosRequestConfig } from "axios";
-import { axiosPrivate, axiosPublic } from "./API";
+import { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { useAuthStore } from "@/store/useAuthStore";
 
-let accessTokenMemory: string | null = null;
 let isRefreshing:boolean = false;
 
 interface failedQuereItem {
@@ -14,10 +13,6 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
 }
 
-export const setAccessToken = (token: string | null) => {
-  accessTokenMemory = token;
-};
-
 const progressQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
@@ -29,10 +24,17 @@ const progressQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-axiosPrivate.interceptors.request.use(
+export function setUpInterceptors (
+  axiosPrivate: AxiosInstance,
+  axiosPublic: AxiosInstance,
+) {
+
+  axiosPrivate.interceptors.request.use(
   (config) => {
-    if (accessTokenMemory && !config.headers["Authorization"]) {
-      config.headers["Authorization"] = `Bearer ${accessTokenMemory}`;
+     const state = useAuthStore.getState();
+    const accessToken = useAuthStore.getState().accessToken
+    if (accessToken && !config.headers["Authorization"]) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -65,8 +67,7 @@ axiosPrivate.interceptors.response.use(
       try {
         const response = await axiosPublic.post<{ accessToken: string }>("/refresh");
         const newAccessToken = response.data.accessToken;
-
-        setAccessToken(newAccessToken);
+        useAuthStore.getState().setAccessToken(newAccessToken)
         progressQueue(null, newAccessToken);
 
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
@@ -78,7 +79,7 @@ axiosPrivate.interceptors.response.use(
           console.error("Queue process failed ", err);
         }
 
-        setAccessToken(null);
+        useAuthStore.getState().clearLocalAuthInfo();
         window.location.href = "/login"
         return Promise.reject(refreshError);
       } finally {
@@ -88,3 +89,4 @@ axiosPrivate.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+}

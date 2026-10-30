@@ -1,4 +1,5 @@
 import axios from "axios";
+import { setUpInterceptors } from "./interceptors";
 
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -13,3 +14,5 @@ export const axiosPrivate = axios.create({
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
+
+setUpInterceptors(axiosPrivate, axiosPublic);

@@ -1,4 +1,5 @@
-import { axiosPrivate, axiosPublic } from "@/lib/API";
+import { axiosPrivate } from "@/lib/API";
+import { ParentOrder } from "@/types";
 
 interface cartItems {
     productId: string,
@@ -15,6 +16,11 @@ const orderService = {
 
         return response.data;
     },
+    getMyOrder: async () => {
+        const response = await axiosPrivate.get<ParentOrder[]>(`/order/getAllParents`);
+
+        return response.data;
+    }
 }
 
 export default orderService;

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 let initPromise: Promise<void> | null = null;
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const { setAccessToken, clearLocalAuthInfo, setUserInfo, setAuthStatus } = useAuthStore();
+    const { setAccessToken, clearLocalAuthInfo, setUserInfo, setAuthStatus, authStatus } = useAuthStore();
 
     useEffect(() => {
         initPromise ??= (async () => {

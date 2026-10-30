@@ -71,3 +71,33 @@ export interface Register {
   otp: string,
 }
 
+export interface OrderItem {
+  name: string,
+  quantity: number,
+  price: number,
+  product: string,
+}
+
+export interface IdAndInfo {
+ _id: string,
+ username: string,
+}
+
+export interface SubOrder {
+  _id: string,
+  shopId: IdAndInfo,
+  parentOrder: string,
+  user: IdAndInfo,
+  orderItems: OrderItem[],
+  subStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+  subTotalPrice: number,
+  createdAt: string,
+}
+
+export interface ParentOrder {
+  _id: string,
+  user: string,
+  subOrders: SubOrder[],
+  totalPrice: number,
+  createdAt: string,
+}
