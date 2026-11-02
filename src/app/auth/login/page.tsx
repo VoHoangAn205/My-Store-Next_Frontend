@@ -51,6 +51,10 @@ const login = () => {
       setErrMessage(message);
     } finally {
       setIsLoading(false);
+      setFormData({
+        email: "",
+        password: "",
+      })
     }
   };
 

@@ -1,5 +1,5 @@
-import { axiosPublic } from "@/lib/API"
-import { Product, ProductPagination, QueryParams, QueryParamsExtension } from "@/types"
+import { axiosPrivate, axiosPublic } from "@/lib/API"
+import { FormProductData, Product, ProductPagination, QueryParams, QueryParamsExtension } from "@/types"
 import { unstable_cache } from "next/cache";
 
 const productService = {
@@ -9,7 +9,8 @@ const productService = {
         return response.data; 
     }),
     getProductByCategory: unstable_cache(async (data: QueryParamsExtension) => {        
-        const response = await axiosPublic.get<ProductPagination>((`/product/category/${data.id}?page=${data.page}&limit=${data.limit}&sort=${data.sort}`));
+        const { id, sort, limit, page} = data;
+        const response = await axiosPublic.get<ProductPagination>(`/product/category/${id}?page=${page}&limit=${limit}&sort=${sort}`);
 
         return response.data;
     }),
@@ -21,10 +22,27 @@ const productService = {
         return response.data;
     },
     getProductDetail: unstable_cache(async (data: QueryParamsExtension)=> {
-        const response = await axiosPublic.get<Product>((`/product/${data.id}`))
+        const response = await axiosPublic.get<Product>(`/product/${data.id}`);
 
         return response.data;
     }),
+    getAllUserProducts: async (data: QueryParamsExtension) => {
+        const { sort, limit, page} = data;
+
+        const response = await axiosPrivate.get<ProductPagination>(`/product/myOwnProducts?page=${page}&limit=${limit}&sort=${sort}`);
+
+        return response.data;
+    },
+    deleteProduct: async (id : string) => {
+        const response = await axiosPrivate.delete(`/product/${id}`);
+
+        return response.data;
+    },
+    createProduct: async (data: FormProductData) => {
+        const response = await axiosPrivate.post(`/product`, data);
+
+        return response.data;
+    }
 }
 
 export default productService;

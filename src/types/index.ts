@@ -26,6 +26,17 @@ export interface Product {
   status: "Available" | "Sold out" | "Discontinued";
   user: User
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface FormProductData {
+  name: string;
+  description: string;
+  category: string[];
+  gallery: string;
+  price: number;
+  stock: number;
+  status: "Available" | "Sold out" | "Discontinued";
 }
 
 export interface AuthResponse {
