@@ -7,18 +7,11 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import HiddenSearchBar from "./HiddenSearchBar";
 import SearchBar from "./SearchBar";
-import { useRouter } from "next/navigation";
 
 function Header() {
-  const router = useRouter()
   const { isSidebarOpen, toggleSidebar, closeSidebar} = useUIStore()
   const { listCategory, setListCategory} = useCategoryStore()
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const navigateUser = (id: string) => {
-    router.push(`/category/${id}`);
-    closeSidebar()
-  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,14 +46,6 @@ function Header() {
             </button>
 
             <Link href={"/"} className="text-xl font-black tracking-widest text-brand-light hover:text-brand-rust transition-colors duration-200">HOANGAN<span className="text-brand-rust">.</span></Link>
-            {/* <a
-              onClick={() => {
-                navigate("/");
-              }}
-              className="text-xl font-black tracking-widest text-brand-light hover:text-brand-rust transition-colors duration-200"
-            >
-              HOANGAN<span className="text-brand-rust">.</span>
-            </a> */}
           </div>
 
           <SearchBar />
@@ -81,13 +66,14 @@ function Header() {
             {isSidebarOpen && (
               <div className="absolute -right-1/3 mt-4 w-50 bg-brand-dark border border-brand-sand/20 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 {listCategory.map((cate, idx) => (
-                  <a
+                  <Link
+                    href={`/product/category/${cate._id}`}
                     key={idx}
                     className="flex items-center px-4 py-2.5 text-sm font-medium text-brand-slate hover:bg-white/5 hover:text-white transition-colors"
-                    onClick={() => navigateUser(cate._id)} // Close menu when an option is clicked
+                    onClick={() => closeSidebar()} // Close menu when an option is clicked
                   >
                     {cate.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}

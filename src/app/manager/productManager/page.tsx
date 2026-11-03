@@ -10,7 +10,7 @@ import ProductTableManager from "@/components/ProductTableManager";
 export default function ProductManager() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true);
-  const {authStatus} = useAuthStore()
+  const {authStatus} = useAuthStore();
 
   // Pagination State mapped to your backend counters
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,29 +24,27 @@ export default function ProductManager() {
     }
   };
 
-  useEffect(() => {
+  const handleFetching = async () => {
     if(authStatus === "loading") return;
     if(authStatus === "guest") {
         setIsLoading(false);
         return;
     }
+      try {
+          const response = await productService.getAllUserProducts({page: currentPage.toString()});
+          
+          setTotalCount(response.count);
+          setTotalPages(response.totalPage);
+          setProducts(response.data)
+      } catch (err) {
+          console.error(err);
+      } finally {
+          setIsLoading(false);
+      }        
+  }
 
-    (async () => {
-        try {
-            const response = await productService.getAllUserProducts({page: currentPage.toString()});
-            
-            setTotalCount(response.count);
-            setTotalPages(response.totalPage);
-            setProducts(response.data)
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
-        
-
-        
-    })();
+  useEffect(() => {
+    handleFetching();
   },[currentPage, authStatus])
 
   return (
@@ -80,7 +78,7 @@ export default function ProductManager() {
       ) : (
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           {/* ==================== Render Table ==================== */}
-          <ProductTableManager products={products} />
+          <ProductTableManager products={products} onRefresh={handleFetching}/>
 
           <div className="bg-slate-50 border-t border-slate-200 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-slate-500 text-center sm:text-left">

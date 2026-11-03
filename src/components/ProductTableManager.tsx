@@ -1,3 +1,4 @@
+"use client"
 import getErrorMessage from "@/helpers/getErrorMessage";
 import productService from "@/services/productService";
 import { Product } from "@/types";
@@ -7,9 +8,10 @@ import renderStatusColor from "../helpers/renderStatusColor";
 
 interface Props {
     products: Product[]
+    onRefresh: () => void;
 }
 
-const ProductTableManager = ({ products } : Props) => {
+const ProductTableManager = ({ products, onRefresh } : Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteProduct = async (id: string) => {
@@ -20,6 +22,7 @@ const ProductTableManager = ({ products } : Props) => {
       await productService.deleteProduct(id);
 
       toast.success("Product deleted successful");
+      onRefresh()
     } catch (err) {
       const message = getErrorMessage(err);
       console.error(message);

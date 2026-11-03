@@ -6,15 +6,22 @@ import MediaUploadArea from "@/components/MediaUploadArea";
 import { useGalleryStore } from "@/store/useGalleryStore";
 import CategorySelectionBar from "@/components/CategorySelectionBar";
 import { useCategoryStore } from "@/store/useCategoryStore";
+import galleryService from "@/services/galleryService";
+import productService from "@/services/productService";
+import { useRouter } from "next/navigation";
+import { FormProductData } from "@/types"
+
+interface FormData extends Omit<FormProductData, "category" | "gallery">{}
 
 function createProduct() {
-    const categoryUpload = useCategoryStore().categoryUpload;
-    const imagesUpload = useGalleryStore().imagesUpload;
+  const router = useRouter()
+  const categoryUpload = useCategoryStore().categoryUpload;
+  const imagesUpload = useGalleryStore().imagesUpload;
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "", 
-    price: "",
-    stock: "",
+    price: 0,
+    stock: 0,
     description: "",
     status: "Available",
   });
@@ -30,27 +37,27 @@ function createProduct() {
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    // setIsLoading(true);
+    setIsLoading(true);
+    
+    try {
+      const uploadedGallery = await galleryService.createGallery(imagesUpload);
+      
+      let finalFormData = {
+        ...formData,
+        gallery: uploadedGallery._id,
+        category: categoryUpload,
+      };
 
-    // try {
-    //   const uploadedGallery = await dispatch(createGallery(imagesUpload)).unwrap();
-
-    //   const finalFormData = {
-    //     ...formData,
-    //     gallery: imagesUpload,
-    //     category: categoryUpload,
-    //   };
-
-    //   await dispatch(createProduct(finalFormData)).unwrap();
-
-    //   toast.success("Product successfully listed");
-    //   navigate("/productManager");
-    // } catch (err) {
-    //   const message = getErrorMessage(err);
-    //   toast.error(message || "Falled to finalize store listing");
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      await productService.createProduct(finalFormData);
+      
+      toast.success("Product successfully listed");
+      router.push("/manager/productManager");
+    } catch (err) {
+      const message = getErrorMessage(err);
+      toast.error(message || "Falled to finalize store listing");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

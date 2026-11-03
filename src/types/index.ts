@@ -112,3 +112,9 @@ export interface ParentOrder {
   totalPrice: number,
   createdAt: string,
 }
+
+export interface FormImgsFile {
+  id: string;
+  file: File;
+  previewURL: string;
+}

@@ -1,14 +1,9 @@
+import { FormImgsFile } from "@/types";
 import { create } from "zustand";
 
-interface ImageItem {
-  id: string;
-  file: File;
-  previewURL: string;
-}
-
 interface GalleryState {
-  imagesUpload: ImageItem[];
-  setImagesUpload: (images: ImageItem[]) => void;
+  imagesUpload: FormImgsFile[];
+  setImagesUpload: (images: FormImgsFile[]) => void;
 }
 
 export const useGalleryStore = create<GalleryState>((set) => ({
