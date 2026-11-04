@@ -1,23 +1,19 @@
-import { axiosPrivate, axiosPublic } from "@/lib/API";
-
-interface Cart {
-    product: string,
-    quantity?: number,
-}
+import { axiosPrivate } from "@/lib/API";
+import { Cart, CartInput } from "@/types";
 
 const cartService = {
-    addToCart: async (data: Cart) => {
-        const response = await axiosPrivate.put(`/cart`, data);
+    addToCart: async (data: CartInput) => {
+        const response = await axiosPrivate.put<Cart>(`/cart`, data);
 
         return response.data;
     },
     getAllCart: async () => {
-        const response = await axiosPrivate.get(`/cart`);
+        const response = await axiosPrivate.get<Cart>(`/cart`);
 
         return response.data;
     },
     deleteCart: async (id: string) => {
-        const response = await axiosPrivate.put(`/cart/${id}`);
+        const response = await axiosPrivate.delete(`/cart/${id}`);
 
         return response.data;
     }

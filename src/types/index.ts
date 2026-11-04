@@ -120,3 +120,21 @@ export interface FormImgsFile {
   file: File;
   previewURL: string;
 }
+
+export interface CartInput {
+    product: string,
+    quantity?: number,
+}
+
+export interface CartItems {
+  product: Product;
+  quantity: number;
+  _id: string
+}
+
+export interface Cart {
+  _id: string;
+  user: string;
+  cartItems: CartItems[]
+}
+

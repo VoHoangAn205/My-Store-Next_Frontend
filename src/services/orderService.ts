@@ -1,13 +1,14 @@
 import { axiosPrivate } from "@/lib/API";
 import { ParentOrder } from "@/types";
 
-interface cartItems {
+export interface CartItemInput {
     productId: string,
     quantity: number,
+    price?: number,
 }
 
 interface orderItems {
-    cartItems: cartItems[]
+    cartItems: CartItemInput[]
 }
 
 const orderService = {

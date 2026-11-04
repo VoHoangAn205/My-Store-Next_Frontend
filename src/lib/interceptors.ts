@@ -80,7 +80,7 @@ axiosPrivate.interceptors.response.use(
         }
 
         useAuthStore.getState().clearLocalAuthInfo();
-        window.location.href = "/login"
+        window.location.href = "/auth/login"
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

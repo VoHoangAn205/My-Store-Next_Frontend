@@ -18,7 +18,7 @@ const purchases = () => {
       setIsLoading(false);
       return;
     }
-
+    
     (async () => {
       try {
       const response = await orderService.getMyOrder();
