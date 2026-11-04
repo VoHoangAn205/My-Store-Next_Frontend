@@ -33,6 +33,9 @@ const authService = {
     register: async (data: Register) => {
         const response = await axiosPublic.post("register", data);
         return response.data;
+    },
+    requestUpgradeToVendor: async () => {
+        const response = await axiosPrivate.put("/user/upgradeToVendor");
     }
 }
 

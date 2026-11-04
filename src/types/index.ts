@@ -12,7 +12,9 @@ export interface Gallery {
 export interface User {
     _id: string;
     username: string;
+    email: string;
     roles: number[];
+    isPendingVendor?: boolean
 }
 
 export interface Product {
