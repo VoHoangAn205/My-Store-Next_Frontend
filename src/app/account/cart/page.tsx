@@ -33,7 +33,8 @@ const CartPage = () => {
 
   const handleRemoveItem = useCallback( async (id: string) => {
     try {
-        await cartService.deleteCart(id);
+        const response = await cartService.deleteCart(id);
+        setCartList(response.cartItems)
     } catch (err) {
         const message = getErrorMessage(err);
         toast.error(message);
@@ -63,9 +64,6 @@ const CartPage = () => {
   const selectedIds = useMemo(() => {
     return new Set(selectedItem.map((item) => item.productId));
 }, [selectedItem]);
-
-  console.trace("CartPage rendered, state changed:", { cartListLength: cartList.length, isLoading, authStatus });
-  
 
   useEffect(() => {
     if(authStatus === "loading") return;
@@ -151,14 +149,18 @@ const CartPage = () => {
 
             {/* Mobile View: Responsive Stacked Cards */}
             <div className="block md:hidden space-y-4">
-                <MobileStackedCard 
-                selectedIds={selectedIds}
-                cartList={cartList}
-                handleQuantityChange={handleQuantityChange}
-                handleRemoveItem={handleRemoveItem}
-                handleToggleSelectItem={handleToggleSelectItem}
+              {cartList.map((item) => {
+                return (
+                  <MobileStackedCard 
+                  key={item._id}
+                  selectedIds={selectedIds}
+                  item={item}
+                  handleQuantityChange={handleQuantityChange}
+                  handleRemoveItem={handleRemoveItem}
+                  handleToggleSelectItem={handleToggleSelectItem}
                 />
-              
+                )
+              })}         
             </div>
 
             {/* Right Column: Order Summary Sidebar */}

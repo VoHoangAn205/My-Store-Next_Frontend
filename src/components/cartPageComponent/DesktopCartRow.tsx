@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import renderStatusColor from "@/helpers/renderStatusColor";
 import { CartItems, CartInput } from "@/types";
