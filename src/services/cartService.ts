@@ -13,7 +13,7 @@ const cartService = {
         return response.data;
     },
     deleteCart: async (id: string) => {
-        const response = await axiosPrivate.delete(`/cart/${id}`);
+        const response = await axiosPrivate.delete<Cart>(`/cart/${id}`);
 
         return response.data;
     }

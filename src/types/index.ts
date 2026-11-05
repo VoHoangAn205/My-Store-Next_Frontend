@@ -55,12 +55,12 @@ export interface QueryParams {
   sort?: "priceAsc" | "priceDesc" | "bestSeller",
   page?: string,
   limit?: string,
-  query?: string
+  query?: string,
+  status?: string,
 }
 
 export interface QueryParamsExtension extends QueryParams{
     id?: string,
-    
 }
 
 export interface ProductPagination extends PagePagination{
@@ -85,6 +85,7 @@ export interface Register {
 }
 
 export interface OrderItem {
+  _id: string,
   name: string,
   quantity: number,
   price: number,
@@ -96,15 +97,18 @@ export interface IdAndInfo {
  username: string,
 }
 
+export type OrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled"
+
 export interface SubOrder {
-  _id: string,
-  shopId: IdAndInfo,
-  parentOrder: string,
-  user: IdAndInfo,
-  orderItems: OrderItem[],
-  subStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
-  subTotalPrice: number,
-  createdAt: string,
+  _id: string;
+  shopId: IdAndInfo;
+  parentOrder: string;
+  user: IdAndInfo;
+  orderItems: OrderItem[];
+  subStatus: OrderStatus;
+  subTotalPrice: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ParentOrder {
@@ -138,3 +142,6 @@ export interface Cart {
   cartItems: CartItems[]
 }
 
+export interface OrderPagination extends PagePagination {
+  data: SubOrder[]
+}
