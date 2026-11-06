@@ -1,5 +1,5 @@
 import { axiosPrivate } from "@/lib/API";
-import { OrderPagination, ParentOrder, QueryParams, QueryParamsExtension } from "@/types";
+import { OrderPagination, ParentOrder, QueryParams } from "@/types";
 
 export interface CartItemInput {
     productId: string,
@@ -28,13 +28,13 @@ const orderService = {
 
         return response.data;
     },
-    vendorUpdateOrderStatus: async (data: QueryParamsExtension) => {
-        const response = await axiosPrivate.put(`/order/shopUpdateStatus/${data.id}`);
+    vendorUpdateOrderStatus: async (id: string) => {
+        const response = await axiosPrivate.put(`/order/shopUpdateStatus/${id}`);
 
         return response.data;
     },
-    vendorCancelOrderStatus: async (data: QueryParamsExtension) => {
-        const response = await axiosPrivate.put(`/order/shopCancel/${data.id}`);
+    vendorCancelOrder: async (id: string) => {
+        const response = await axiosPrivate.put(`/order/shopCancel/${id}`);
 
         return response.data;
     }

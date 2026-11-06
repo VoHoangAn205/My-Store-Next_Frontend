@@ -6,9 +6,8 @@ interface Props {
     currentPage: number;
     totalPage: number;
     totalItems: number;
-    limit: string;
-    setLimit: (limit: string) => void;
     handlePageChange: (p: number) => void;
+    setLimit: (update: Record<string, string>) => void;
 }
 
 interface PropButton {
@@ -36,13 +35,13 @@ const MainButton = ({label, disabled, onClick}: PropButton) => (
     </button>
 )
 
-const OrderPagination = ({currentPage, totalPage, totalItems, limit, setLimit, handlePageChange} : Props) => {
+const OrderPaginationBar = ({currentPage, totalPage, totalItems, handlePageChange, setLimit} : Props) => {
   const params = useSearchParams();
   const page = Number(params.get("page")) || 1;
-  const numberLimit = Number(limit);
+  const limit = Number(params.get("limit")) || 5;
 
-  const startIndex = totalItems > 0 ? (page - 1) * numberLimit + 1 : 0;
-  const endIndex = Math.min(page * numberLimit, totalItems);
+  const startIndex = totalItems > 0 ? (page - 1) * limit + 1 : 0;
+  const endIndex = Math.min(page * limit, totalItems);
 
     return (
         <div className="px-3 sm:px-4 py-3 bg-slate-50/60 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
@@ -60,7 +59,7 @@ const OrderPagination = ({currentPage, totalPage, totalItems, limit, setLimit, h
                 <select
                   id="perPage"
                   value={limit}
-                  onChange={(e) => setLimit(e.target.value)}
+                  onChange={(e) => setLimit({"limit": e.target.value})}
                   className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
                 >
                   <option value={"5"}>5</option>
@@ -123,4 +122,4 @@ const OrderPagination = ({currentPage, totalPage, totalItems, limit, setLimit, h
     )
 }
 
-export default OrderPagination;
+export default OrderPaginationBar;

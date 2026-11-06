@@ -1,20 +1,14 @@
 "use client"
-import React, { useState, useEffect, useMemo } from "react";
-import getStatusBadgeStyle from "../../helpers/getStatusBadgeStyle";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getShopOrders,
-  shopCancelOrder,
-  shopUpdateOrderStatus,
-} from "../../redux/orderSlice";
-import { toast } from "sonner";
-import { getNextStatusConfig } from "@/helpers/getNextStatusConfig";
-import { OrderStatus, SubOrder } from "@/types";
-import orderService from "@/services/orderService";
-import getErrorMessage from "@/helpers/getErrorMessage";
 import ActiveModal from "@/components/orderManagerComponent/ActiveModal";
-import { useSearchParams } from "next/navigation";
-import OrderPagination from "@/components/orderManagerComponent/OrderPagination";
+import OrderPaginationBar from "@/components/orderManagerComponent/OrderPaginationBar";
+import getErrorMessage from "@/helpers/getErrorMessage";
+import getOrderStatusStyle from "@/helpers/getOrderStatusStyle";
+import orderService from "@/services/orderService";
+import { useAuthStore } from "@/store/useAuthStore";
+import { OrderPagination, SubOrder } from "@/types";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const STATUS_OPTIONS = [
   "pending",
@@ -24,52 +18,66 @@ const STATUS_OPTIONS = [
   "cancelled",
 ];
 
+const DEFAULT_ORDER_DATA = {
+  data: [],
+  count: 0,
+  totalPage: 1,
+  currentPage: 1,
+}
+
 const ShopOrderManager = () => {
-  const dispatch = useDispatch();
-  const listOrder = useSelector((state) => state.ORDER.shopOrders);
+  const router = useRouter();
+  const pathname = usePathname();
+  const authStatus = useAuthStore((s) => s.authStatus);
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
-
-  // const [orders, setOrders] = useState(INITIAL_ORDERS);
-  const [selectedTab, setSelectedTab] = useState("all");
+  const status = searchParams.get("status") || "all";
+  const limit = searchParams.get("limit") ?? "5";
   const [searchTerm, setSearchTerm] = useState("");
   const [activeOrderModal, setActiveOrderModal] = useState<SubOrder | null>(null);
-  // Pagination State
-  const [limit, setLimit] = useState("5");
+  const [orderData, setOrderData] = useState<OrderPagination>(DEFAULT_ORDER_DATA);
 
-  const {
-    data = [],
-    count = 0,
-    totalPage = 1,
-    currentPage = 1,
-  } = listOrder || {};
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > orderData.totalPage) return;
 
-  const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPage) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(newPage))
+    handleUpdateParams({"page": String(newPage)});
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Status Change Handler
-  const handleStatusChange = async (orderId) => {
-    try {
-      const res = await dispatch(shopUpdateOrderStatus(orderId)).unwrap();
+  const handleUpdateParams = (update: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(update).forEach(([key, value]) => params.set(key, value));
+    router.push(`${pathname}?${params.toString()}`, {scroll: false});
+  }
 
-      await dispatch(
-        getShopOrders({
-          limit,
-          page,
-          status: selectedTab,
-        }),
-      );
+  const handleGetVendorOrder = async () => {
+      try {
+          const response = await orderService.getVendorOrder({
+              limit,
+              page: page.toString(),
+              status
+          });
+          setOrderData(response);
+      } catch (err) {
+          const message = getErrorMessage(err);
+          toast.error(message);
+          console.error(message);
+      }
+  }
+
+  // Status Change Handler
+  const handleStatusChange = async (orderId: string) => {
+    try {
+      const res = await orderService.vendorUpdateOrderStatus(orderId);
+
+      handleGetVendorOrder();
 
       if (activeOrderModal && activeOrderModal._id === orderId) {
-        setActiveOrderModal((prev) => ({
-          ...prev,
+        setActiveOrderModal({
+          ...activeOrderModal,
           subStatus: res?.subStatus,
-        }));
+        });
       }
 
       toast.success("Status update successful");
@@ -82,21 +90,15 @@ const ShopOrderManager = () => {
 
   const handleCancelOrder = async (orderId: string) => {
     try {
-      const res = await dispatch(shopCancelOrder(orderId)).unwrap();
+      const res = await orderService.vendorCancelOrder(orderId);
 
-      await dispatch(
-        getShopOrders({
-          limit,
-          page,
-          status: selectedTab,
-        }),
-      );
+      handleGetVendorOrder();
 
       if (activeOrderModal && activeOrderModal._id === orderId) {
-        setActiveOrderModal((prev) => ({
-          ...prev,
+        setActiveOrderModal({
+          ...activeOrderModal,
           subStatus: res?.subStatus,
-        }));
+        });
       }
 
       toast.success("Order cancelled");
@@ -110,39 +112,32 @@ const ShopOrderManager = () => {
   // Filter Logic
   const filteredOrders = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
-
-    return data.filter((order) => {
-      const matchesTab =
-        selectedTab === "all" || selectedTab === order.subStatus;
-      const matchesSearch =
+    if(!term) return orderData.data
+    return orderData.data.filter((order: SubOrder) => 
         order._id.toLowerCase().includes(term) ||
         order.user?.username.toLocaleLowerCase().includes(term)
-
-      return matchesSearch && matchesTab;
-    });
-  }, [data, searchTerm]);
-
-  // Reset to page 1 whenever filters or limit change
-  useEffect(() => {
-    setSearchParams({ page: "1" });
-  }, [selectedTab, searchTerm, limit]);
+    );
+  }, [orderData.data, searchTerm]);
 
   useEffect(() => {
-    
-    (async () => {
-        try {
-            const response = await orderService.getVendorOrder({
-                limit,
-                page: page.toString(),
-                status: selectedTab,
-            })
-        } catch (err) {
-            const message = getErrorMessage(err);
-            toast.error(message);
-            console.error(message);
-        }
-    })();
-  }, [page, selectedTab, limit]);
+    if(authStatus !== "authed") return;
+    let cancelled = false;
+
+   (async () => {
+    try {
+      const response = await orderService.getVendorOrder({
+        limit,
+        page: String(page),
+        status,
+      });
+      if (!cancelled) setOrderData(response);
+    } catch (err) {
+      if (!cancelled) toast.error(getErrorMessage(err));
+    }
+  })();
+  
+    return () => {cancelled = true}
+  }, [authStatus, page, status, limit]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 p-3 sm:p-6 md:p-8">
@@ -164,12 +159,12 @@ const ShopOrderManager = () => {
           {/* Status Tabs */}
           <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-100">
             {["all", ...STATUS_OPTIONS].map((tab) => {
-              const isActive = selectedTab === tab;
+              const isActive = status === tab;
 
               return (
                 <button
                   key={tab}
-                  onClick={() => setSelectedTab(tab)}
+                  onClick={() => handleUpdateParams({"status": tab, "page": "1"})}
                   className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-xl capitalize whitespace-nowrap transition-all flex items-center gap-2 ${
                     isActive
                       ? "bg-slate-900 text-white shadow-md"
@@ -186,7 +181,7 @@ const ShopOrderManager = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search by Order ID, Username, or Email..."
+              placeholder="Search by Order ID, Username..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 sm:py-2.5 pl-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
@@ -230,9 +225,6 @@ const ShopOrderManager = () => {
                         <div className="font-semibold text-slate-900">
                           {order.user?.username || "Unknown"}
                         </div>
-                        <div className="text-xs text-slate-500">
-                          {order.user?.email}
-                        </div>
                       </td>
                       <td className="py-4 px-4 text-xs text-slate-600 whitespace-nowrap">
                         {new Date(order.createdAt).toLocaleDateString("en-US", {
@@ -259,7 +251,7 @@ const ShopOrderManager = () => {
                       </td>
                       <td className="py-4 px-4 text-center">
                         <span
-                          className={`inline-block text-xs font-bold py-1 px-3 rounded-full border capitalize ${getStatusBadgeStyle(
+                          className={`inline-block text-xs font-bold py-1 px-3 rounded-full border capitalize ${getOrderStatusStyle(
                             order.subStatus,
                           )}`}
                         >
@@ -271,7 +263,7 @@ const ShopOrderManager = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan="6"
+                      colSpan={6}
                       className="py-12 text-center text-slate-400 text-sm"
                     >
                       No matching orders found.
@@ -296,7 +288,7 @@ const ShopOrderManager = () => {
                       #{order._id.slice(-8)}
                     </span>
                     <span
-                      className={`text-[10px] font-bold py-0.5 px-2.5 rounded-full border capitalize ${getStatusBadgeStyle(
+                      className={`text-[10px] font-bold py-0.5 px-2.5 rounded-full border capitalize ${getOrderStatusStyle(
                         order.subStatus,
                       )}`}
                     >
@@ -308,9 +300,6 @@ const ShopOrderManager = () => {
                     <div>
                       <p className="font-semibold text-slate-900">
                         {order.user?.username}
-                      </p>
-                      <p className="text-[11px] text-slate-500">
-                        {order.user?.email}
                       </p>
                     </div>
                     <div className="text-right">
@@ -348,12 +337,11 @@ const ShopOrderManager = () => {
           </div>
 
           {/* PAGINATION FOOTER */}
-          <OrderPagination
-          currentPage={currentPage}
-          totalItems={count}
-          totalPage={totalPage}
-          limit={limit}
-          setLimit={setLimit}
+          <OrderPaginationBar
+          currentPage={orderData.currentPage}
+          totalItems={orderData.count}
+          totalPage={orderData.totalPage}
+          setLimit={handleUpdateParams}
           handlePageChange={handlePageChange}/>
         </div>
 

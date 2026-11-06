@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const CartPage = () => {
-    const { authStatus } = useAuthStore();
+    const authStatus = useAuthStore((s) => s.authStatus);
     const [cartList, setCartList] = useState<CartItems[]>([]);
     const [selectedItem, setSelectedItem] = useState<CartItemInput[]>([]);
     const [isLoading, setIsLoading] = useState(true)
