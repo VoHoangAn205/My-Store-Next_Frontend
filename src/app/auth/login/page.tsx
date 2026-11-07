@@ -5,10 +5,10 @@ import authService from "@/services/authService";
 import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Suspense, useState } from "react";
 import { toast } from "sonner";
 
-const login = () => {
+const LoginFormContext = () => {
   const {setAuthStatus, setUserInfo, setAccessToken} = useAuthStore();
   const router = useRouter();
   const from = useSearchParams().get("from");
@@ -59,45 +59,6 @@ const login = () => {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-brand-light">
-      {/* LEFT SIDE: BRAND CONTENT SHOWCASE (Matches Register view for design consistency) */}
-      <BrandContext/>
-      {/* RIGHT SIDE: THE ACTIONABLE LOGIN FORM CANVAS */}
-      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 sm:p-12 lg:p-16">
-        <div className="w-full max-w-md bg-white border border-brand-sand rounded-2xl p-8 sm:p-10 shadow-xl">
-          {/* Mobile Only Brand Header */}
-          <div className="block lg:hidden mb-6">
-            <span className="text-xl font-black tracking-widest text-brand-dark">
-              HOANGAN<span className="text-brand-rust">.</span>
-            </span>
-          </div>
-
-          {/* Form Header Title Section */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-black text-brand-dark tracking-tight">
-              Sign in to your account
-            </h1>
-            <p className="text-sm text-brand-slate mt-1">
-              New to our network?{" "}
-              <Link
-                href={"/auth/register"}
-                className="text-brand-rust font-semibold hover:underline"
-              >
-                Create an account
-              </Link>
-            </p>
-          </div>
-
-          {/* Form Divider Strip */}
-          <div className="flex items-center my-6">
-            <div className="grow border-t border-brand-sand/60"></div>
-            <span className="px-3 text-xs font-bold tracking-wider text-brand-slate uppercase bg-white">
-              your security key
-            </span>
-            <div className="grow border-t border-brand-sand/60"></div>
-          </div>
-
-          {/* Main Input Form Engine */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Input 1: Email */}
             <div>
@@ -178,10 +139,55 @@ const login = () => {
               Sign In
             </button>
           </form>
-        </div>
-      </div>
-    </div>
   );
 }
 
-export default login;
+export default function loginPage() {
+  return (
+    <Suspense fallback={<div className="py-10 text-center text-sm text-brand-slate">Loading form...</div>}>
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-brand-light">
+      {/* LEFT SIDE: BRAND CONTENT SHOWCASE (Matches Register view for design consistency) */}
+      <BrandContext/>
+      {/* RIGHT SIDE: THE ACTIONABLE LOGIN FORM CANVAS */}
+      <div className="col-span-1 lg:col-span-7 flex items-center justify-center p-6 sm:p-12 lg:p-16">
+        <div className="w-full max-w-md bg-white border border-brand-sand rounded-2xl p-8 sm:p-10 shadow-xl">
+          {/* Mobile Only Brand Header */}
+          <div className="block lg:hidden mb-6">
+            <span className="text-xl font-black tracking-widest text-brand-dark">
+              HOANGAN<span className="text-brand-rust">.</span>
+            </span>
+          </div>
+
+          {/* Form Header Title Section */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-black text-brand-dark tracking-tight">
+              Sign in to your account
+            </h1>
+            <p className="text-sm text-brand-slate mt-1">
+              New to our network?{" "}
+              <Link
+                href={"/auth/register"}
+                className="text-brand-rust font-semibold hover:underline"
+              >
+                Create an account
+              </Link>
+            </p>
+          </div>
+
+          {/* Form Divider Strip */}
+          <div className="flex items-center my-6">
+            <div className="grow border-t border-brand-sand/60"></div>
+            <span className="px-3 text-xs font-bold tracking-wider text-brand-slate uppercase bg-white">
+              your security key
+            </span>
+            <div className="grow border-t border-brand-sand/60"></div>
+          </div>
+
+          {/* Main Input Form Engine */}
+          <LoginFormContext/>
+        </div>
+      </div>
+    </div>
+    </Suspense>
+  )
+}
