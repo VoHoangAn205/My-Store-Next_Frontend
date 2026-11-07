@@ -7,7 +7,7 @@ import orderService from "@/services/orderService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { OrderPagination, SubOrder } from "@/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const STATUS_OPTIONS = [
@@ -25,7 +25,7 @@ const DEFAULT_ORDER_DATA = {
   currentPage: 1,
 }
 
-const ShopOrderManager = () => {
+const OrderManagerTableContext = () => {
   const router = useRouter();
   const pathname = usePathname();
   const authStatus = useAuthStore((s) => s.authStatus);
@@ -140,20 +140,7 @@ const ShopOrderManager = () => {
   }, [authStatus, page, status, limit]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-3 sm:p-6 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Shop Order Management
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Manage incoming sub-orders and update delivery progress.
-            </p>
-          </div>
-        </div>
-
+    <>
         {/* CONTROLS BAR */}
         <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-sm space-y-3">
           {/* Status Tabs */}
@@ -353,9 +340,29 @@ const ShopOrderManager = () => {
           handleStatusChange={handleStatusChange}
           setActiveOrderModal={setActiveOrderModal}/>
         )}
-      </div>
-    </div>
+    </>
   );
 };
 
-export default ShopOrderManager;
+export default function orderManager() {
+  return (
+    <Suspense fallback={<div className="py-10 text-center text-sm text-brand-slate">Loading form...</div>}>
+    <div className="min-h-screen bg-slate-50 text-slate-900 p-3 sm:p-6 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        {/* HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Shop Order Management
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Manage incoming sub-orders and update delivery progress.
+            </p>
+          </div>
+        </div>
+        <OrderManagerTableContext/>
+      </div>
+    </div>
+    </Suspense>
+  )
+};

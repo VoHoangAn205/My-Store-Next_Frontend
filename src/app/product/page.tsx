@@ -6,6 +6,7 @@ import SubPageHeader from "@/components/SubPageHeader"
 import getErrorMessage from "@/helpers/getErrorMessage"
 import productService from "@/services/productService"
 import { PagePagination, Product, QueryParams } from "@/types"
+import { Suspense } from "react"
 
 const defaultPagination = {
   totalPage: 1,
@@ -50,7 +51,10 @@ const search = async ({searchParams}: Props) => {
         {/* MAIN CATEGORY CONTAINER */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* FULL-WIDTH SORT & CONTROL BAR */}
-          {pagination && <FilterBar pagination={pagination}/>}
+          {pagination && 
+          <Suspense fallback={<div className="py-10 text-center text-sm text-brand-slate">Loading form...</div>}>
+            <FilterBar pagination={pagination}/>
+          </Suspense>}
 
           {products.length === 0 ? (
             <NoProductFound />

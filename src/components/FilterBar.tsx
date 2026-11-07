@@ -3,7 +3,7 @@ import useUpdateQuery from "@/store/useUpdateQuery";
 import { PagePagination } from "@/types";
 import { useSearchParams } from "next/navigation";
 
-const limitOptions = ["1","12", "16", "24"].map((n) => ({label: n, value: n}));
+const limitOptions = ["12", "16", "24"].map((n) => ({label: n, value: n}));
 const sortOptions = [
   { label: "Newest Arrival", value: "newest" },
   { label: "Price: Low to High", value: "priceAsc" },
@@ -89,7 +89,7 @@ const FilterBar = ({pagination} : FilterBarProps) => {
               value={limit} 
               label="Show:" 
               id="limit" 
-              onChange={(value) => updateQuery({ limit: value })}/>
+              onChange={(value) => updateQuery({ limit: value, page: "1" })}/>
             </div>
           </div>
         </>
